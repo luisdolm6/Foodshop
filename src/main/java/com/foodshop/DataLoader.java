@@ -15,6 +15,7 @@ public class DataLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
+        // food ,description, price
         add("Classic Burger", "Beef patty, lettuce, tomato, cheese", "8.99");
         }
 
