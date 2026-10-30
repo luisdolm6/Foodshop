@@ -6,7 +6,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 
-/** Sample menu so the shop is not empty. Edit or replace with your own items. */
+//Menu edit with items
 @Component
 public class DataLoader implements CommandLineRunner {
     private final ProductRepository products;
