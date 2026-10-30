@@ -1,0 +1,7 @@
+* text=auto
+*.java text diff
+*.html text diff
+*.css text diff
+*.xml text diff
+*.properties text diff
+*.md text diff
