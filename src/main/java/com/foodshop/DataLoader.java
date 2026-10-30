@@ -16,13 +16,7 @@ public class DataLoader implements CommandLineRunner {
     @Override
     public void run(String... args) {
         add("Classic Burger", "Beef patty, lettuce, tomato, cheese", "8.99");
-        add("Margherita Pizza", "Tomato, mozzarella, fresh basil", "11.50");
-        add("Chicken Wrap", "Grilled chicken, veggies, garlic sauce", "7.25");
-        add("Caesar Salad", "Romaine, parmesan, croutons", "6.75");
-        add("French Fries", "Crispy and salted", "3.50");
-        add("Lemonade", "Fresh squeezed", "2.50");
-        add("Chocolate Cake", "Rich and moist", "4.75");
-    }
+        }
 
     private void add(String name, String desc, String price) {
         Product p = new Product();
