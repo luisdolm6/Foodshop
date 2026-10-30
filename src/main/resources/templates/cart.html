@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Cart')}"></head>
+<body>
+<nav th:replace="~{fragments :: nav}"></nav>
+<main>
+<h2>Your cart</h2>
+<p class="muted" th:if="${#lists.isEmpty(lines)}">Your cart is empty. <a th:href="@{/}">Browse the menu</a></p>
+<th:block th:if="${!#lists.isEmpty(lines)}">
+<table>
+  <tr><th>Item</th><th>Price</th><th>Qty</th><th>Subtotal</th><th></th></tr>
+  <tr th:each="l : ${lines}">
+    <td th:text="${l.product.name}"></td>
+    <td th:text="'$' + ${#numbers.formatDecimal(l.product.price, 1, 2)}"></td>
+    <td>
+      <form method="post" th:action="@{/cart/update/{id}(id=${l.product.id})}">
+        <input class="qty" type="number" name="quantity" min="0" max="99" th:value="${l.quantity}">
+        <button class="link">Update</button>
+      </form>
+    </td>
+    <td th:text="'$' + ${#numbers.formatDecimal(l.subtotal, 1, 2)}"></td>
+    <td><form method="post" th:action="@{/cart/remove/{id}(id=${l.product.id})}"><button class="link">Remove</button></form></td>
+  </tr>
+</table>
+<h3>Total: <span th:text="'$' + ${#numbers.formatDecimal(total, 1, 2)}"></span></h3>
+<a class="btn" th:href="@{/checkout}">Checkout</a>
+</th:block>
+</main>
+</body>
+</html>

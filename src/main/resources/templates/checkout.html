@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Checkout')}"></head>
+<body>
+<nav th:replace="~{fragments :: nav}"></nav>
+<main>
+<h2>Checkout</h2>
+<p class="error" th:if="${error}" th:text="${error}"></p>
+<div class="card" style="margin-bottom:16px">
+  <div th:each="l : ${lines}" th:text="${l.quantity} + ' x ' + ${l.product.name} + ' - $' + ${#numbers.formatDecimal(l.subtotal, 1, 2)}"></div>
+  <div class="price">Total: <span th:text="'$' + ${#numbers.formatDecimal(total, 1, 2)}"></span></div>
+</div>
+<form class="stack" method="post" th:action="@{/checkout}">
+  <input type="text" name="customerName" placeholder="Full name" required>
+  <input type="tel" name="phone" placeholder="Phone number" required>
+  <textarea name="address" rows="3" placeholder="Delivery address" required></textarea>
+  <button type="submit">Place order</button>
+</form>
+<p class="muted">Prototype only: no real payment is taken.</p>
+</main>
+</body>
+</html>
