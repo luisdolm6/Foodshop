@@ -9,8 +9,6 @@ To run the website on your local machine, follow these steps:
 3. look for the `databasesql` file copy the content into your local SQL instance to create the  tables and data.
 4. Update `application.properties` with your own MySQL username and password. If you kept the default database settings, you should only need to change your login credentials.
 5. Run `FoodShopApplication` in VS Code or your preferred Java runner.
-6. Open the website in your browser using the following link:
+6. Open the website in your browser using the following link: `http://localhost:8080`
 
-   http://localhost:8080
 
-The website should now be running locally on your machine.
