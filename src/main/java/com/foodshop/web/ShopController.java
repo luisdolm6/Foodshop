@@ -13,25 +13,31 @@ import java.util.List;
 
 @Controller
 public class ShopController {
+
     private final ProductRepository products;
     private final OrderRepository orders;
     private final Cart cart;
 
     public ShopController(ProductRepository products, OrderRepository orders, Cart cart) {
-        this.products = products; this.orders = orders; this.cart = cart;
+        this.products = products;
+        this.orders = orders;
+        this.cart = cart;
     }
 
     // ---------- menu ----------
     @GetMapping("/")
     public String menu(Model model) {
-        model.addAttribute("products", products.findAll());
+        // Loads available items directly from your MySQL 'menu' table
+        model.addAttribute("products", products.findByIsAvailableTrue());
         return "index";
     }
 
     // ---------- cart ----------
     @PostMapping("/cart/add/{id}")
     public String add(@PathVariable Long id) {
-        if (products.existsById(id)) cart.add(id);
+        if (products.existsById(id)) {
+            cart.add(id);
+        }
         return "redirect:/";
     }
 
@@ -59,29 +65,37 @@ public class ShopController {
     @GetMapping("/checkout")
     public String checkoutForm(Model model) {
         List<CartLine> lines = lines();
-        if (lines.isEmpty()) return "redirect:/cart";
+        if (lines.isEmpty()) {
+            return "redirect:/cart";
+        }
         model.addAttribute("lines", lines);
         model.addAttribute("total", total(lines));
         return "checkout";
     }
 
     @PostMapping("/checkout")
-    public String placeOrder(@RequestParam String customerName, @RequestParam String phone,
-                             @RequestParam String address, Model model) {
+    public String placeOrder(@RequestParam String customerName,
+                             @RequestParam String phone,
+                             @RequestParam String address,
+                             Model model) {
         List<CartLine> lines = lines();
-        if (lines.isEmpty()) return "redirect:/cart";
+        if (lines.isEmpty()) {
+            return "redirect:/cart";
+        }
         if (customerName.isBlank() || phone.isBlank() || address.isBlank()) {
             model.addAttribute("error", "Please fill in your name, phone and address.");
             model.addAttribute("lines", lines);
             model.addAttribute("total", total(lines));
             return "checkout";
         }
+
         CustomerOrder order = new CustomerOrder();
         order.setCustomerName(customerName.trim());
         order.setPhone(phone.trim());
         order.setAddress(address.trim());
         order.setCreatedAt(LocalDateTime.now());
         order.setTotal(total(lines));
+
         List<OrderItem> items = new ArrayList<>();
         for (CartLine l : lines) {
             OrderItem i = new OrderItem();
@@ -94,13 +108,16 @@ public class ShopController {
         order.setItems(items);
         orders.save(order);
         cart.clear();
+
         return "redirect:/order/" + order.getId();
     }
 
     @GetMapping("/order/{id}")
     public String confirmation(@PathVariable Long id, Model model) {
         CustomerOrder order = orders.findById(id).orElse(null);
-        if (order == null) return "redirect:/";
+        if (order == null) {
+            return "redirect:/";
+        }
         model.addAttribute("order", order);
         return "confirmation";
     }
@@ -114,6 +131,8 @@ public class ShopController {
     }
 
     private BigDecimal total(List<CartLine> lines) {
-        return lines.stream().map(CartLine::getSubtotal).reduce(BigDecimal.ZERO, BigDecimal::add);
+        return lines.stream()
+                .map(CartLine::getSubtotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 }
