@@ -1,4 +1,4 @@
-# FoodShop (Barebones)
+# FoodShop
 
 ## How to Run the Website
 
