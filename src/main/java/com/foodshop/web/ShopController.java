@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+// Controller for handling shop-related web requests, including menu, cart, and checkout.
 @Controller
 public class ShopController {
 
@@ -45,7 +46,7 @@ public class ShopController {
     public String viewCart(Model model) {
         List<CartLine> lines = lines();
         model.addAttribute("lines", lines);
-        model.addAttribute("total", total(lines));
+        model.addAttribute("totals", totals(lines));      // changed
         return "cart";
     }
 
@@ -69,7 +70,7 @@ public class ShopController {
             return "redirect:/cart";
         }
         model.addAttribute("lines", lines);
-        model.addAttribute("total", total(lines));
+        model.addAttribute("totals", totals(lines));      // changed
         return "checkout";
     }
 
@@ -85,16 +86,21 @@ public class ShopController {
         if (customerName.isBlank() || phone.isBlank() || address.isBlank()) {
             model.addAttribute("error", "Please fill in your name, phone and address.");
             model.addAttribute("lines", lines);
-            model.addAttribute("total", total(lines));
+            model.addAttribute("totals", totals(lines));  // changed
             return "checkout";
         }
+
+        OrderTotals t = totals(lines);                    // new
 
         CustomerOrder order = new CustomerOrder();
         order.setCustomerName(customerName.trim());
         order.setPhone(phone.trim());
         order.setAddress(address.trim());
         order.setCreatedAt(LocalDateTime.now());
-        order.setTotal(total(lines));
+        order.setSubtotal(t.getSubtotal());               // new
+        order.setTax(t.getTax());                         // new
+        order.setFee(t.getFee());                         // new
+        order.setTotal(t.getTotal());                     // changed
 
         List<OrderItem> items = new ArrayList<>();
         for (CartLine l : lines) {
@@ -130,9 +136,15 @@ public class ShopController {
         return lines;
     }
 
+    // adds up every line's subtotal (price x quantity) = the subtotal before tax and fee
     private BigDecimal total(List<CartLine> lines) {
         return lines.stream()
                 .map(CartLine::getSubtotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    // wraps the subtotal in OrderTotals, which adds tax and the fee 
+    private OrderTotals totals(List<CartLine> lines) {
+        return new OrderTotals(total(lines));
     }
 }

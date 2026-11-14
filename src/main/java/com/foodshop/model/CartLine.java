@@ -2,7 +2,7 @@ package com.foodshop.model;
 
 import java.math.BigDecimal;
 
-/** One row in the cart page (not stored in the database). */
+// calculate subtotal for each cart line so quantity x price
 public class CartLine {
     private final Product product;
     private final int quantity;
