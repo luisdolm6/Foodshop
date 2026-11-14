@@ -33,10 +33,10 @@ CREATE TABLE menu (
 
 
 INSERT INTO menu (item_name, description, price, category) VALUES
-('Chicken Tacos', 'Two seasoned chicken tacos with lettuce and cheese.', 6.00, 'Mexican'),
-('Beef Burrito', 'Beef, rice, beans, cheese, and salsa.', 8.50, 'Mexican'),
-('Vegetable Fried Rice', 'Fried rice with mixed vegetables and egg.', 7.00, 'Chinese'),
-('Orange Chicken', 'Crispy chicken served with orange sauce and rice.', 9.50, 'Chinese'),
-('Cheese Pizza', 'Personal pizza topped with tomato sauce and mozzarella.', 8.00, 'Italian'),
-('Spaghetti', 'Spaghetti with marinara sauce.', 7.50, 'Italian');
+('Chicken Tacos', 'Two seasoned chicken tacos with lettuce and cheese.', 68.00, 'Mexican'),
+('Beef Burrito', 'Beef, rice, beans, cheese, and salsa.', 1.50, 'Mexican'),
+('Vegetable Fried Rice', 'Fried rice with mixed vegetables and egg.', 3.00, 'Chinese'),
+('Orange Chicken', 'Crispy chicken served with orange sauce and rice.', 10.50, 'Chinese'),
+('Cheese Pizza', 'Personal pizza topped with tomato sauce and mozzarella.', 12.00, 'Italian'),
+('Spaghetti', 'Spaghetti with marinara sauce.', 27.50, 'Italian');
 
