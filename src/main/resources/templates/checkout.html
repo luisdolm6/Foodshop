@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments :: head('Checkout')}"></head>
 <body>
 <nav th:replace="~{fragments :: nav}"></nav>
@@ -8,7 +8,11 @@
 <p class="error" th:if="${error}" th:text="${error}"></p>
 <div class="card" style="margin-bottom:16px">
   <div th:each="l : ${lines}" th:text="${l.quantity} + ' x ' + ${l.product.name} + ' - $' + ${#numbers.formatDecimal(l.subtotal, 1, 2)}"></div>
-  <div class="price">Total: <span th:text="'$' + ${#numbers.formatDecimal(totals.total, 1, 2)}"></span></div>
+  <hr style="border-color:#333; margin:8px 0">
+  <div class="muted">Subtotal: <span th:text="'$' + ${#numbers.formatDecimal(totals.subtotal, 1, 2)}"></span></div>
+  <div class="muted">Tax: <span th:text="'$' + ${#numbers.formatDecimal(totals.tax, 1, 2)}"></span></div>
+  <div class="muted">Festival Fee: <span th:text="'$' + ${#numbers.formatDecimal(totals.fee, 1, 2)}"></span></div>
+  <div class="price" style="margin-top:6px">Total: <span th:text="'$' + ${#numbers.formatDecimal(totals.total, 1, 2)}"></span></div>
 </div>
 <form class="stack" method="post" th:action="@{/checkout}">
   <input type="text" name="customerName" placeholder="Full name"
