@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://thymeleaf.org">
 <head th:fragment="head(title)">
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
   <title th:text="${title} + ' - FoodShop'">FoodShop</title>
@@ -10,6 +10,15 @@
   <a class="brand" th:href="@{/}">FoodShop</a>
   <span class="grow"></span>
   <a th:href="@{/cart}">Cart (<span th:text="${cartCount}">0</span>)</a>
+  <th:block th:if="${currentUser == null}">
+    <a th:href="@{/login}" style="margin-left:14px">Login</a>
+    <a th:href="@{/register}" style="margin-left:14px">Register</a>
+  </th:block>
+  <th:block th:if="${currentUser != null}">
+    <a th:href="@{/orders}" style="margin-left:14px">My Orders</a>
+    <span style="margin-left:14px" th:text="'Hi, ' + ${currentUser.fullName}"></span>
+    <a th:href="@{/logout}" style="margin-left:14px">Logout</a>
+  </th:block>
 </nav>
 </body>
 </html>

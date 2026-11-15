@@ -3,6 +3,7 @@ package com.foodshop.web;
 import com.foodshop.model.*;
 import com.foodshop.repo.OrderRepository;
 import com.foodshop.repo.ProductRepository;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -46,7 +47,7 @@ public class ShopController {
     public String viewCart(Model model) {
         List<CartLine> lines = lines();
         model.addAttribute("lines", lines);
-        model.addAttribute("totals", totals(lines));      // changed
+        model.addAttribute("totals", totals(lines));
         return "cart";
     }
 
@@ -70,7 +71,7 @@ public class ShopController {
             return "redirect:/cart";
         }
         model.addAttribute("lines", lines);
-        model.addAttribute("totals", totals(lines));      // changed
+        model.addAttribute("totals", totals(lines));
         return "checkout";
     }
 
@@ -78,6 +79,7 @@ public class ShopController {
     public String placeOrder(@RequestParam String customerName,
                              @RequestParam String phone,
                              @RequestParam String address,
+                             HttpSession session,
                              Model model) {
         List<CartLine> lines = lines();
         if (lines.isEmpty()) {
@@ -86,21 +88,26 @@ public class ShopController {
         if (customerName.isBlank() || phone.isBlank() || address.isBlank()) {
             model.addAttribute("error", "Please fill in your name, phone and address.");
             model.addAttribute("lines", lines);
-            model.addAttribute("totals", totals(lines));  // changed
+            model.addAttribute("totals", totals(lines));
             return "checkout";
         }
 
-        OrderTotals t = totals(lines);                    // new
+        OrderTotals t = totals(lines);
 
         CustomerOrder order = new CustomerOrder();
         order.setCustomerName(customerName.trim());
         order.setPhone(phone.trim());
         order.setAddress(address.trim());
         order.setCreatedAt(LocalDateTime.now());
-        order.setSubtotal(t.getSubtotal());               // new
-        order.setTax(t.getTax());                         // new
-        order.setFee(t.getFee());                         // new
-        order.setTotal(t.getTotal());                     // changed
+        order.setSubtotal(t.getSubtotal());
+        order.setTax(t.getTax());
+        order.setFee(t.getFee());
+        order.setTotal(t.getTotal());
+
+        User loggedInUser = (User) session.getAttribute("user");
+        if (loggedInUser != null) {
+            order.setUser(loggedInUser);
+        }
 
         List<OrderItem> items = new ArrayList<>();
         for (CartLine l : lines) {
