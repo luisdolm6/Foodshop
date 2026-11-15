@@ -13,6 +13,9 @@ public class CustomerOrder {
     private String customerName;
     private String phone;
     private String address;
+    private BigDecimal subtotal;
+    private BigDecimal tax;
+    private BigDecimal fee;
     private BigDecimal total;
     private LocalDateTime createdAt;
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
@@ -26,6 +29,12 @@ public class CustomerOrder {
     public void setPhone(String phone) { this.phone = phone; }
     public String getAddress() { return address; }
     public void setAddress(String address) { this.address = address; }
+    public BigDecimal getSubtotal() { return subtotal; }
+    public void setSubtotal(BigDecimal subtotal) { this.subtotal = subtotal; }
+    public BigDecimal getTax() { return tax; }
+    public void setTax(BigDecimal tax) { this.tax = tax; }
+    public BigDecimal getFee() { return fee; }
+    public void setFee(BigDecimal fee) { this.fee = fee; }
     public BigDecimal getTotal() { return total; }
     public void setTotal(BigDecimal total) { this.total = total; }
     public LocalDateTime getCreatedAt() { return createdAt; }
@@ -33,3 +42,4 @@ public class CustomerOrder {
     public java.util.List<OrderItem> getItems() { return items; }
     public void setItems(java.util.List<OrderItem> items) { this.items = items; }
 }
+
