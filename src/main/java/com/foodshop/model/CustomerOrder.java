@@ -18,6 +18,11 @@ public class CustomerOrder {
     private BigDecimal fee;
     private BigDecimal total;
     private LocalDateTime createdAt;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private java.util.List<OrderItem> items;
 
@@ -39,7 +44,8 @@ public class CustomerOrder {
     public void setTotal(BigDecimal total) { this.total = total; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    public User getUser() { return user; }
+    public void setUser(User user) { this.user = user; }
     public java.util.List<OrderItem> getItems() { return items; }
     public void setItems(java.util.List<OrderItem> items) { this.items = items; }
 }
-
