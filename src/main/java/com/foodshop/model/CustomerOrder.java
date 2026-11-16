@@ -18,6 +18,10 @@ public class CustomerOrder {
     private BigDecimal fee;
     private BigDecimal total;
     private LocalDateTime createdAt;
+private String status = "PREPARING";
+
+public String getStatus() { return status; }
+public void setStatus(String status) { this.status = status; }
 
     @ManyToOne
     @JoinColumn(name = "user_id")

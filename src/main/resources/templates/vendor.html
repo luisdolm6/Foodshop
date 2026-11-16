@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Admin Dashboard')}"></head>
+<body>
+<nav th:replace="~{fragments :: nav}"></nav>
+<main>
+  <h1>Admin / Vendor Dashboard</h1>
+
+  <!-- Notification banner after marking food done -->
+  <div th:if="${notificationBanner}" class="ok" style="margin-bottom:16px;">
+    <strong th:text="${notificationBanner}"></strong>
+  </div>
+
+  <!-- 1. Manage Menu Items Section (Top) -->
+  <h2>Manage Menu Items</h2>
+  <div class="card" style="margin-bottom:16px;">
+    <form th:action="@{/vendor/save}" method="post">
+      <input type="hidden" name="id" th:value="${form.id}">
+      <div style="margin-bottom:8px;">
+        <label>Item Name</label><br>
+        <input type="text" name="name" th:value="${form.name}" required style="width:100%;">
+      </div>
+      <div style="margin-bottom:8px;">
+        <label>Description</label><br>
+        <input type="text" name="description" th:value="${form.description}" style="width:100%;">
+      </div>
+      <div style="margin-bottom:8px;">
+        <label>Price</label><br>
+        <input type="number" step="0.01" name="price" th:value="${form.price}" required style="width:100%;">
+      </div>
+      <button type="submit" class="btn" th:text="${form.id != null ? 'Update Item' : 'Add Item'}"></button>
+      <a th:if="${form.id != null}" th:href="@{/vendor}" style="margin-left:10px;">Cancel</a>
+    </form>
+  </div>
+
+  <div th:each="item : ${items}" class="card" style="margin-bottom:10px;">
+    <strong th:text="${item.name}"></strong> —
+    <span th:text="'$' + ${#numbers.formatDecimal(item.price, 1, 2)}"></span>
+    <div class="muted" th:text="${item.description}"></div>
+    <div style="margin-top:8px;">
+      <a class="btn" th:href="@{/vendor(edit=${item.id})}">Edit</a>
+      <form th:action="@{/vendor/delete/{id}(id=${item.id})}" method="post" style="display:inline; margin-left:8px;">
+        <button type="submit" class="btn">Delete</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 2. Customer Orders Section (Bottom, Newest First) -->
+  <h2 style="margin-top:28px;">Customer Orders</h2>
+  <div th:if="${#lists.isEmpty(orders)}" class="card">
+    <p class="muted">No orders placed yet.</p>
+  </div>
+
+  <div th:each="order : ${orders}" class="card" style="margin-bottom:14px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+      <div>
+        <strong>Order #<span th:text="${order.id}"></span></strong> —
+        <span th:text="${order.customerName}"></span>
+        (<span th:text="${order.phone}"></span>)
+      </div>
+      <form th:if="${order.status != 'READY'}"
+            th:action="@{/vendor/orders/{id}/ready(id=${order.id})}"
+            method="post"
+            style="margin:0;">
+        <button type="submit" class="btn">Mark Food Done &amp; Notify</button>
+      </form>
+    </div>
+
+    <div class="muted" th:text="'Address: ' + ${order.address}"></div>
+    <div style="margin-top:6px;">
+      <div th:each="item : ${order.items}"
+           th:text="${item.quantity} + ' x ' + ${item.productName}"></div>
+    </div>
+    <div class="price" style="margin-top:6px;">
+      Total: <span th:text="'$' + ${#numbers.formatDecimal(order.total, 1, 2)}"></span>
+    </div>
+    <div style="margin-top:6px;">
+      Status: <strong th:text="${order.status != null ? order.status : 'PREPARING'}"></strong>
+    </div>
+  </div>
+</main>
+</body>
+</html>

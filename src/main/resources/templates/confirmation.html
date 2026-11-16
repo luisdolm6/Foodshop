@@ -13,6 +13,11 @@
   <div class="price">Total: <span th:text="'$' + ${#numbers.formatDecimal(order.total, 1, 2)}"></span></div>
   <div class="muted">Delivering to: <span th:text="${order.address}"></span></div>
 </div>
+
+<div th:if="${notificationBanner}"
+     style="background:#d4edda; color:#155724; border:1px solid #c3e6cb; padding:12px 16px; border-radius:6px; margin-bottom:16px;">
+    <strong th:text="${notificationBanner}"></strong>
+</div>
 <p><a class="btn" th:href="@{/}">Back to menu</a></p>
 </main>
 </body>

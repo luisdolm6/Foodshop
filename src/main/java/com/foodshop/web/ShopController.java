@@ -3,10 +3,14 @@ package com.foodshop.web;
 import com.foodshop.model.*;
 import com.foodshop.repo.OrderRepository;
 import com.foodshop.repo.ProductRepository;
+import com.foodshop.repo.UserRepository;
+import com.foodshop.service.NotificationService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -18,12 +22,20 @@ public class ShopController {
 
     private final ProductRepository products;
     private final OrderRepository orders;
+    private final UserRepository users;
     private final Cart cart;
+    private final NotificationService notificationService;
 
-    public ShopController(ProductRepository products, OrderRepository orders, Cart cart) {
+    public ShopController(ProductRepository products,
+                          OrderRepository orders,
+                          UserRepository users,
+                          Cart cart,
+                          NotificationService notificationService) {
         this.products = products;
         this.orders = orders;
+        this.users = users;
         this.cart = cart;
+        this.notificationService = notificationService;
     }
 
     // ---------- menu ----------
@@ -80,7 +92,8 @@ public class ShopController {
                              @RequestParam String phone,
                              @RequestParam String address,
                              HttpSession session,
-                             Model model) {
+                             Model model,
+                             RedirectAttributes redirectAttributes) {
         List<CartLine> lines = lines();
         if (lines.isEmpty()) {
             return "redirect:/cart";
@@ -104,7 +117,7 @@ public class ShopController {
         order.setFee(t.getFee());
         order.setTotal(t.getTotal());
 
-        User loggedInUser = (User) session.getAttribute("user");
+        User loggedInUser = resolveLoggedInUser(session);
         if (loggedInUser != null) {
             order.setUser(loggedInUser);
         }
@@ -119,10 +132,25 @@ public class ShopController {
             items.add(i);
         }
         order.setItems(items);
-        orders.save(order);
+        CustomerOrder savedOrder = orders.save(order);
         cart.clear();
 
-        return "redirect:/order/" + order.getId();
+        // Send email notification if logged-in user has an email
+        String recipientEmail = (loggedInUser != null) ? loggedInUser.getEmail() : null;
+        boolean emailSent = notificationService.sendOrderEmail(
+                recipientEmail,
+                savedOrder,
+                "Foodshop Order Confirmation #" + savedOrder.getId(),
+                "Your order has been received and sent to the kitchen!"
+        );
+
+        redirectAttributes.addFlashAttribute("notificationBanner",
+                emailSent
+                        ? "Order #" + savedOrder.getId() + " placed! Confirmation email sent to " + recipientEmail + "."
+                        : "Order #" + savedOrder.getId() + " confirmed!"
+        );
+
+        return "redirect:/order/" + savedOrder.getId();
     }
 
     @GetMapping("/order/{id}")
@@ -136,6 +164,22 @@ public class ShopController {
     }
 
     // ---------- helpers ----------
+    private User resolveLoggedInUser(HttpSession session) {
+        for (String key : new String[]{"user", "currentUser", "loggedInUser"}) {
+            Object attr = session.getAttribute(key);
+            if (attr instanceof User u) {
+                return u;
+            }
+        }
+        for (String key : new String[]{"userId", "currentUserId", "id"}) {
+            Object attr = session.getAttribute(key);
+            if (attr instanceof Long id) {
+                return users.findById(id).orElse(null);
+            }
+        }
+        return null;
+    }
+
     private List<CartLine> lines() {
         List<CartLine> lines = new ArrayList<>();
         cart.getItems().forEach((id, qty) ->
@@ -150,7 +194,7 @@ public class ShopController {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    // wraps the subtotal in OrderTotals, which adds tax and the fee 
+    // wraps the subtotal in OrderTotals, which adds tax and the fee
     private OrderTotals totals(List<CartLine> lines) {
         return new OrderTotals(total(lines));
     }
