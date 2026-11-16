@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org">
+<head th:replace="~{fragments :: head('My Orders')}"></head>
+<body>
+<nav th:replace="~{fragments :: nav}"></nav>
+<main>
+  <h2>My Order History</h2>
+  <p class="muted" th:if="${#lists.isEmpty(orders)}">
+    You haven't placed any orders yet. <a th:href="@{/}">Browse the festival menu</a>!
+  </p>
+  <div class="card" style="margin-bottom:16px" th:each="o : ${orders}">
+    <div style="display:flex; justify-content:space-between; align-items:center">
+      <strong>Order #<span th:text="${o.id}"></span></strong>
+      <span class="muted" th:text="${#temporals.format(o.createdAt, 'MMM dd, yyyy h:mm a')}"></span>
+    </div>
+    <div style="margin:8px 0">
+      <div th:each="item : ${o.items}"
+           th:text="${item.quantity} + ' x ' + ${item.productName} + ' ($' + ${#numbers.formatDecimal(item.price, 1, 2)} + ')'"></div>
+    </div>
+    <div class="muted" th:text="'Pickup / Location: ' + ${o.address}"></div>
+    <div class="price" style="margin-top:6px">
+      Total: <span th:text="'$' + ${#numbers.formatDecimal(o.total, 1, 2)}"></span>
+    </div>
+  </div>
+</main>
+</body>
+</html>
