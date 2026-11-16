@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Notifications')}"></head>
+<body>
+<nav th:replace="~{fragments :: nav}"></nav>
+<main>
+  <h2>My Notifications</h2>
+  <p class="muted" th:if="${#lists.isEmpty(notifications)}">You don't have any notifications yet.</p>
+  <div class="card" style="margin-bottom:12px" th:each="notification : ${notifications}">
+    <strong th:text="${notification.type}">CONFIRMATION</strong>
+    <span th:if="${!notification.read}" class="muted"> • New</span>
+    <p th:text="${notification.message}"></p>
+    <small class="muted" th:text="${#temporals.format(notification.createdAt, 'MMM dd, yyyy h:mm a')}"></small>
+    <form th:if="${!notification.read}"
+          th:action="@{/notifications/{id}/read(id=${notification.id})}" method="post">
+      <button type="submit">Mark as read</button>
+    </form>
+  </div>
+</main>
+</body>
+</html>
